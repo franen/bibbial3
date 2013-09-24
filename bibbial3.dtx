@@ -1,0 +1,693 @@
+% \iffalse meta-comment
+%
+%% File: bibbial3.dtx
+%%
+%% Copyright (C) 2012 by Francesco Endrici
+%% <francescoendrici at gmail dot com>
+%% -------------------------------------------------------
+% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%
+%
+%<*driver|package>
+\RequirePackage{expl3,l3regex}
+%</driver|package>
+%<*driver>
+\documentclass[a4paper,full]{l3doc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage[ttscale=0.85]{libertine}
+\usepackage{array,booktabs,multirow}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{xparse}
+%\usepackage{bibbial3}
+\hypersetup{%
+    pdftitle={Manuale d'uso del pacchetto "bibbial3"},
+    pdfsubject={Un pacchetto per inserire brani biblici in un documento LaTeX},
+    pdfauthor={Francesco Endrici},
+    pdfkeywords={bibbia}} 
+\newcommand{\bibbia}{\textsf{bibbial3}}    
+\DeclareRobustCommand*{\meta}[1]{%
+  $\langle${\normalfont\itshape#1\kern0.12em }$\rangle$}
+%</driver>
+%<*driver|package>
+\GetIdInfo$Id: bibbial3.dtx 0.4 2013-03-26 12:00:00Z Francesco $
+          {Inserire brani biblici in un documento}
+% 0.4: metto attibuti g_ o l_ alle macro, usato \__scan_new:N al posto di \scan_new:N
+%</driver|package>
+%<*driver>
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+%
+% \title{Manuale d'uso del pacchetto \textsf{bibbial3}\thanks{Questo documento si riferisce alla versione \ExplFileVersion{} del pacchetto.}\\
+% \large Un pacchetto per inserire brani biblici in un documento \LaTeX}
+% \author{Francesco Endrici\\
+%   \texttt{francescoendrici at gmail dot com}}
+% \date{Rilasciato il \ExplFileDate}
+%
+% \maketitle
+%
+% \begin{documentation}
+%
+% Il pacchetto \bibbia{} permette di inserire all'interno di un qualsiasi documento \LaTeX{} dei brani biblici (della versione CEI 2008 della Bibbia in italiano) utilizzando il comando \verb!\branobibbia{Lib;Cap,Ver-Ver}!. Si può scegliere se stampare o meno i numeri dei versetti. I brani solitamente strutturati in versi, come i Salmi, tratti di Isaia, Geremia e altri, possono essere stampati strutturati in versi o come testo semplice, e si può decidere di inserire delle barre ("/") come separatori dei versi. 
+%
+% \tableofcontents
+%
+%\section*{File contenuti}
+%Fanno parte del \emph{bundle} \bibbia{} i file:
+% \begin{itemize}
+% \item bibbial3.ins
+% \item bibbial3.dtx
+% \item bibbialatex3.sh
+% \item sostLaTeX3.sed
+% \item verselettere.sed
+% \end{itemize}
+% \section*{Pacchetti caricati}
+% Il pacchetto carica i pacchetti \textsf{expl3}, \textsf{l3regex} e \textsf{xparse}.
+%
+% 
+% \section{Introduzione}
+% Solitamente quando si vuole inserire un brano biblico all'interno di un documento il procedimento che si segue è quello di fare un copia-incolla del testo da internet. Può capitare che ci siano problemi con la codifica dei font, per cui alcune lettere non appaiono come dovrebbero, oppure si vuole formattare i numeri dei versetti in un certo modo e si deve quindi selezionarli uno per uno e apportare le modifiche desiderate. Il pacchetto \bibbia{} permette di inserire un brano con un semplice comando partendo da dei file di testo caricati sul proprio computer. Non si rende quindi nemmeno necessaria una connessione a internet.
+% 
+% Nel 2008 la CEI ha pubblicato la nuova traduzione della Bibbia, ma purtroppo non ne ha pubblicato un file di testo liberamente distribuibile. Il gruppo di eleutheros.org ha scritto una serie di script che permettono di ottenere diversi formati della Bibbia (.txt, .csv, .db) a partire dai file .pdf caricati sul sito www.verbum.net. Il pacchetto \bibbia{} utilizza dei file di testo dei capitoli della Bibbia ottenuti dal file bibbia.db di eleutheros.org. Ogni utente del pacchetto \bibbia{} dovrà crearsi da solo i file dei capitoli della Bibbia, perché i detentori dei diritti sul testo non ne permettono la divulgazione.
+% 
+% \section{Creare i file di testo dei capitoli}
+% La prima cosa da fare è procurarsi un computer (o una macchina virtuale) con installato Ubuntu (forse può funzionare anche qualche altra distribuzione di Linux, ma non ho mai provato). Scaricare poi dalla pagina \url{http://www.eleutheros.org/it/projects/bibbia2008/} la cartella Bibbia~2008-2.7. Al suo interno troverete le istruzioni per ottenere il file bibbia.db. A questo punto si esegue lo script bibbialatex.sh (avendo cura che il file .sh e il file .db siano nella stessa cartella) che crea la cartella "CapitoliLaTeX3" all'interno della quale si trovano i 1328 file .tex dei singoli capitoli della Bibbia. Questa è la cartella a cui il pacchetto \bibbia{} attinge per stampare i brani biblici. Essa può essere messa nella cartella di lavoro oppure nell'albero personale. Quest'ultima scelta sarebbe da preferire, perché riduce notevolmente la possibilità di modificare accidentalmente i file. Preciso che i file creati in ambiente Linux ora possono essere spostati sul computer che preferite, non siete obbligati e elaborare i vostri file \LaTeX{} su Ubuntu!
+% 
+% \section{Il pacchetto \bibbia}
+% Il pacchetto si può utilizzate con qualsiasi classe di \LaTeX. 
+%
+% \noindent Si carica, al solito, con \verb!\usepackage[opzioni]{bibbial3}!.
+% \subsection{Opzioni}
+% Le opzioni del pacchetto sono:
+% \begin{description}
+% \item[numvers] opzione caricata di default, stampa i numeri dei versetti.
+% \item[nonumvers] impedisce la stampa dei numeri dei versetti.
+% \item[versepoem] stampa i brani "poetici", cioè quelli strutturati in versi (Salmi, brani di Isaia e Geremia\ldots), in strofe.
+% \item[textpoem] opzione caricata di default, stampa i brani "poetici" come testo normale. Interpreta ogni fine strofa come una fine di capoverso.
+% \item[slashpoem] l'opzione disattiva versepoem e attiva textpoem e inserisce una barra ("/") a delimitare i versetti.
+% \end{description}
+% \subsection{Inserire un brano biblico}
+% Per inserire un brano biblico si usa il comando \verb!\branobibbia! con la sintassi:
+%\begin{verbatim}
+% \branobibbia{Lib;Cap,VerIn-VerFin}
+% \branobibbia{Gv;10,4-15}
+% \end{verbatim} 
+% oppure
+%\begin{verbatim}
+% \branobibbia{Lib;Cap,VerIn-}
+% \branobibbia{Gv;10,4-}
+% \end{verbatim} 
+% oppure
+%\begin{verbatim}
+% \branobibbia{Lib:Cap,Ver}
+% \branobibbia{Gv;3,16}
+% \end{verbatim} 
+% dove \texttt{Lib} è la sigla del libro della Bibbia (si veda la tabella~\ref{tab:libri} per la corrispondenza fra nome del libro e sigla da utilizzare), \texttt{Cap} è il numero del capitolo che interessa, \texttt{VerIn} e \texttt{VerFin} sono il numero iniziale e finale dei versetti che interessano, \texttt{Ver} è il numero del singolo versetto che interessa. Per stampare dal versetto VerIn fino alla fine del capitolo basta non scrivere nulla dopo il trattino. Si capisce subito che non è possibile inserire con un solo comando dei brani appartenenti a diversi capitoli di un libro. Ciò è dovuto alla necessità di limitare la dimensione dei file letti da \LaTeX{} in fase di elaborazione del testo. Questa limitazione può essere aggirata concatenando più comandi \verb!\branobibbia!, perché essi non iniziano un nuovo capoverso e non aggiungono spaziature verticali.
+% 
+% Il brano della Bibbia così inserito viene stampato con il font corrente. Si lascia all'utente la possibilità di definire nuovi comandi per formattazioni particolari.
+%
+% Possono essere automaticamente inserite le intestazioni dei brani (<<Dal Vangelo secondo \ldots{}>> oppure <<Dal Libro del Profeta \dots>>)  semplicemente mettendo un asterisco dopo \verb!\branobibbia!.
+% Così 
+%\begin{verbatim}
+% \branobibbia*{Gv;3,16}
+% \end{verbatim} 
+% darà:
+
+%
+% \noindent\textsc{Dal Vangelo secondo Giovanni \small (Gv\thinspace 3, 16)}
+% 
+% \medskip
+%
+% \textsuperscript{\scriptsize16} Dio infatti ha tanto amato il mondo da dare il Figlio unigenito, perché chiunque crede in lui non vada perduto, ma abbia la vita eterna.
+%
+%\bigskip
+% Le intestazioni si trovano all'interno del file bibbial3.sty e possono essere modificate solo modificand questo file. Il pacchetto \bibbia{} permette di modificare il font con cui sono scritti intestazioni e riferimenti biblici ridefinendo i comandi \verb!\fontintestazioni! e \verb!\fontriferimenti!.
+% \begin{table}[t]
+% \centering
+% \caption{Libri della Bibbia e sigle da utilizzare.}
+% \label{tab:libri}
+% \begin{tabular}{llllll}
+% \toprule
+%  Libro & Sigla & Libro & Sigla & Libro & Sigla\\
+% \midrule
+%  Abacuc & Ab & Genesi & Gn & Neemia & Ne \\
+%  Abdia & Abd & Geremia & Ger & Numeri & Nm \\
+%  Aggeo & Ag & Giacomo & Gc & Osea & Os \\
+%  Amos & Am & Giobbe & Gb & Pietro 1 & 1Pt \\
+%  Apocalisse & Ap & Gioele & Gl & Pietro 2 & 2Pt \\
+%  Atti & At & Giona & Gio & Proverbi & Pro \\
+%  Baruc & Bar & Giosuè & Gs & Re 1 & 1Re \\
+%  Cantico dei Cantici & Ct & Giovanni 1 & 1Gv & Re 2 & 2Re \\
+%  Colossesi & Col & Giovanni 2 & 2Gv & Romani & Rm \\
+%  Corinzi 1 & 1Cor & Giovanni 3 & 3Gv & Rut & Rt \\
+%  Corinzi 2 & 2Cor & Giovanni & Gv & Salmi & Sal \\
+%  Cronache 1 & 1Cr & Giuda & Gd & Samuele 1 & 1Sam \\
+%  Cronache 2 & 2Cr & Giudici & Gdc & Samuele 2 & 2Sam \\
+%  Daniele & Dn & Giuditta & Gdt & Sapienza & Sap \\
+%  Deuteronomio & Dt & Isaia & Is & Siracide & Sir \\
+%  Ebrei & Eb & Lamentazioni & Lam & Sofonia & Sof \\
+%  Qoèlet & Qo & Levitico & Lv & Tessalonicesi 1 & 1Ts \\
+%  Efesini & Ef & Luca & Lc & Tessalonicesi 2 & 2Ts \\
+%  Esdra & Esd & Maccabei 1 & 1Mac & Timoteo 1 & 1Tm \\
+%  Esodo & Es & Maccabei 2 & 2Mac & Timoteo 2 & 2Tm \\
+%  Ester & Est & Malachia & Ml & Tito & Tt \\
+%  Ezechiele & Ez & Marco & Mc & Tobia & Tb \\
+%  Filemone & Fm & Matteo & Mt & Zaccaria & Zc \\
+%  Filippesi & Fil & Michea & Mic &  &  \\
+%  Galati & Gal & Naum & Na &  &  \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+% \subsection{Numeri dei versetti}
+% La formattazione dei versetti è affidata alle macro:
+% \begin{verbatim}
+% \newcommand{\numversize}{\scriptsize} 
+% \newcommand{\numversep}{\hskip0.1em}
+% \end{verbatim} 
+% È possibile modificare la dimensione dei numeri e la loro distanza dal testo ridefinendo i comandi qui sopra.
+% 
+% La stampa dei numeri può essere abilitata e disabilitata localmente mediante i comendi \verb!\numverson! e \verb!\numversoff!.
+% \subsection{Brani poetici}
+% Solitamente quando si vogliono scrivere dei brani in versi ci si affida all'ambiente \texttt{verse}. Tuttavia non è possibile strutturare il file di testo della bibbia in modo che si possano generare automaticamente dei \verb!begin{verse}! e \verb!\end{verse}! laddove si voglia. Ogni riga dei versi "poetici" è stata quindi delimitata da un \verb!\bpoem! e un \verb!\epoem!. Questi vengono considerati come dei delimitatori nel caso in cui si voglia stampare il testo in versi e assumono altri significati se sono attive le opzioni \texttt{textpoem} o \texttt{slashpoem}.
+%
+% \section{Da fare}
+% La cosa principale su cui rimane da lavorare è la correzione di imprecisioni nella gestione dei brani poetici. La creazione dei file dei singoli capitoli non è perfetta e alcune righe di testo vengono trattate come "poetiche" anche se non lo sono. La gestione dei brani in modalità testo normale sembra invece corretta.
+%
+% Bisognerebbe introdurre i comandi \verb!\versepoemon! e \verb!\versepoemoff! per abilitare e disabilitare localmente la stampa in modalità "poesia".
+%
+% Si potrebbe lavorare anche per integrare \bibbia{} con \textsf{bibleref-ita}, quando il pacchetto sarà pronto.
+%
+% \section{Riconoscimenti}
+% L'idea di creare questo pacchetto è stata mia, certo, ma la collaborazione di altre persone è stata fondamentale per il suo sviluppo. Quindi un grosso ringraziamento va a Claudio Beccari per il contributo nella scrittura delle macro di \LaTeX{} nella versione originaria del pacchetto, che non utilizzava la sintassi di LaTeX3, a Enrico Gregorio che mi ha dato preziosi suggerimenti per l'uso dei nuovi comandi di \LaTeX3 e a Alessio Zamboni per la consulenza sugli script bash.
+% \StopEventually{\PrintChanges\PrintIndex}
+%
+% \end{documentation}
+%
+% \begin{implementation}
+% \section{Il codice}
+% \iffalse
+%<*package>
+% \fi
+%
+%    \begin{macrocode}		
+\ProvidesExplPackage
+  {\ExplFileName}{\ExplFileDate}{\ExplFileVersion}{\ExplFileDescription}
+\@ifpackagelater { expl3 } { 2011/10/09 }
+  { }
+  {
+    \PackageError { bibbial3 } { Support~package~l3kernel~too~old. }
+      {
+        Please~install~an~up~to~date~version~of~l3kernel~
+        using~your~TeX~package~manager~or~from~CTAN.\\ \\
+        Loading~xparse~will~abort!
+      }
+    \tex_endinput:D
+  }
+%    \end{macrocode}
+% definiamo le variabili booleane che vengono modificate richiamando le opzioni del pacchetto. Dichiariamo poi le opzioni.
+%    \begin{macrocode}
+\bool_new:N \g_numvers_bool
+\bool_new:N \g_versepoem_bool
+\bool_new:N \g_slashpoem_bool
+\DeclareOption { numvers }
+  {
+   \bool_set_true:N \g_numvers_bool
+  }
+\DeclareOption{ nonumvers }
+  {
+   \bool_set_false:N \g_numvers_bool
+  }
+\DeclareOption { versepoem }
+  {
+   \bool_set_false:N \g_slashpoem_bool
+   \bool_set_true:N \g_versepoem_bool
+  }
+\DeclareOption { textpoem }
+  {
+   \bool_set_false:N \g_versepoem_bool
+   \bool_set_false:N \g_slashpoem_bool
+  }
+\DeclareOption { slashpoem }
+  {
+   \bool_set_false:N \g_versepoem_bool
+   \bool_set_true:N \g_slashpoem_bool
+  }
+%    \end{macrocode}
+% Il pacchetto stampa di default i numeri di versetto e lascia i brani poetici in forma di testo semplice.
+%    \begin{macrocode}		
+\ExecuteOptions{numvers,textpoem}
+\ProcessOptions 
+\RequirePackage{xparse}
+\NewDocumentCommand{\numversoff}{}{\bool_set_false:N \g_numvers_bool}
+\NewDocumentCommand{\numverson}{}{\bool_set_true:N \g_numvers_bool}
+%    \end{macrocode}
+%\NewDocumentCommand{\versepoemoff}{}{\bool_set_false:N \g_versepoem_bool} 
+%\NewDocumentCommand{\versepoemon}{}{\bool_set_true:N \g_versepoem_bool}
+%creo la property list in cui inserirò i nomi dei versetti e i loro numeri (vc=veronome-contatore)
+%    \begin{macrocode}		
+\prop_new:N \l_corrisp_vc_versetti 
+%    \end{macrocode}
+%contatore-veronome
+%    \begin{macrocode}		
+\prop_new:N \l_corrisp_cv_versetti 
+%    \end{macrocode}
+% la prop list in cui inserisco il testo dei versetti
+%    \begin{macrocode}		
+\prop_new:N \l_testo_versetti 
+%    \end{macrocode}
+% creo le token list e i contatori che servono per la gestione dei numeri dei Capitoli e dei versetti.
+%    \begin{macrocode}		
+\tl_new:N \l_bibbia_Libro_tl
+\tl_new:N \l_bibbia_Capitolo_tl
+\tl_new:N \l_bibbia_VerIniz_tl
+\tl_new:N \l_bibbia_VerFin_tl
+\tl_new:N \l_bibbia_numero_capitoli_tl
+\tl_new:N \l_bibbia_numero_VerIniz_tl
+\tl_new:N \l_bibbia_numero_VerFin_tl
+\int_new:N \l_numero_versetti_int 
+\int_new:N \l_bibbia_vers_count_int
+\int_new:N \l_bibbia_numero_capitoli_libro_int
+\int_new:N \l_bibbia_numero_VerIniz_int
+\int_new:N \l_bibbia_numero_VerFin_int
+\int_new:N \l_bibbia_numero_versetti_totali_int
+\cs_generate_variant:Nn \prop_get:Nn {NV}
+%    \end{macrocode}
+% definisco i comandi che regolano le spaziature dei capoversi con le diverse opzioni.
+%    \begin{macrocode}		
+\NewDocumentCommand{\biblepar}{}{\par}
+\NewDocumentCommand{\poemversesep}{}{\medskip}
+\NewDocumentCommand{\textversesep}{}{\par}
+\NewDocumentCommand{\slashversesep}{}{\par}
+\NewDocumentCommand{\numversize}{}{\scriptsize}
+\NewDocumentCommand{\numversep}{}{\hskip0.1em}
+%    \end{macrocode}
+% definisco il comando \verb!\bibleverses! che si trova nei file di testo della bibbia. Esso permette di inserire i versetti della Bibbia nella apposita prop list. Inoltre riempie le property list che creano una corrispondenza fra il nome dei versetti e il loro numero progressivo nel capitolo. Questa complicazione nasce dal fatto che alcuni capitoli biblici contengono dei versetti nominati con numero e lettera ("1a", "1b", \dots). 
+%    \begin{macrocode}		
+\NewDocumentCommand{\bibleverses}{mm}
+ {
+  \int_incr:N \l_numero_versetti_int %fa aumentare di 1 il contatore dei versetti
+  \prop_put:NVn \l_testo_versetti \l_numero_versetti_int {#2} 
+  \prop_put:Nnx \l_corrisp_vc_versetti {#1}{\int_use:N \l_numero_versetti_int}
+  \prop_put:NVn \l_corrisp_cv_versetti \l_numero_versetti_int {#1}
+ }
+%    \end{macrocode}
+% definisco il comando che stampa i numeri dei versetti. Se l'opzione \texttt{numvers} non è attiva non stampa nulla.
+%    \begin{macrocode}		
+\cs_new_protected:Npn \stampanumero:n #1
+ {\if_bool:N \g_numvers_bool
+  {\textsuperscript{\numversize#1}\nobreak\numversep}
+  \else:
+  {\scan_stop:}
+  \fi:
+ }
+
+\tl_new:N \l_bibbia_temp_five_tl
+\tl_new:N \l_bibbia_temp_four_tl
+\tl_new:N \l_bibbia_riferimenti_testo_tl
+\tl_new:N \l_bibbia_intestazione_libro_tl
+%    \end{macrocode}
+% definiamo la macro che ha il compito di leggere le informazioni in ingresso e ricavarne il nome del Libro che interessa, il numero del capitolo,  il nome del versetto iniziale e di quello finale. La macro dà anche dei messaggi di errore qualora:
+% \begin{itemize}
+% \item la sigla del libro non corrisponda a una di quelle utilizzate per nominare i file;
+% \item il numero del capitolo richiesto sia superiore al numero di capitoli del Libro;
+% \item il versetto iniziale o quello finale non esistano nel capitolo scelto.
+% \end{itemize}
+% Genera inoltre la token list \verb!\l_bibbia_riferimenti_testo_tl! che serve per inserire i riferimenti biblici nell'intestazione del brano. (Si potrebbe pensare di utilizzare "\textsf{bibleref-ita}" quando sarà pronto.)
+%    \begin{macrocode}		
+\cs_new_protected:Npn \bibbia_estraidati:w #1 ; #2 , #3 - #4 - #5 !!
+ {
+  \prop_clear:N \corrisp_vc_versetti
+  \prop_clear:N \l_corrisp_cv_versetti
+  \prop_clear:N \l_testo_versetti
+  \tl_set:Nn \l_bibbia_Libro_tl {#1}
+  \tl_set:Nn \l_bibbia_Capitolo_tl {#2}
+  \prop_get:NnNTF \g_bibbia_libri_capitoli {#1} \l_bibbia_numero_capitoli_tl
+   {}
+   {
+    \msg_error:nn {bibbial3} {ATTENZIONE!~  Controlla~ che~ la~ sigla~ "#1"~ 
+    sia ~corretta!}
+   }  
+  \int_set:Nn \l_bibbia_numero_capitoli_libro_int {\l_bibbia_numero_capitoli_tl}
+  \int_compare:nNnTF {#2} > {\l_bibbia_numero_capitoli_libro_int}
+   {
+    \msg_error:nn{bibbial3} {ATTENZIONE!~Questo~ libro~ non~ ha ~cosi' ~tanti~ 
+    capitoli! ~Al massimo ~sono~ \int_use:N \l_bibbia_numero_capitoli_libro_int}
+   }
+   {
+    \scan_stop:
+   }  
+  \prop_get:NnN \g_bibbia_intestaz_cap_prop {#1} \l_bibbia_intestazione_libro_tl
+  \int_zero:N \l_numero_versetti_int
+  \file_input:n {\l_bibbia_Libro_tl\l_bibbia_Capitolo_tl}
+  \int_set_eq:NN \l_bibbia_numero_versetti_totali_int \l_numero_versetti_int
+  \tl_set:Nn \l_bibbia_VerIniz_tl {#3}
+   \prop_get:NVNTF \l_corrisp_vc_versetti \l_bibbia_VerIniz_tl \l_bibbia_numero_VerIniz_tl
+   {}
+   {
+    \msg_error:nn {bibbial3} {ATTENZIONE!~  Questo~capitolo~ non~ contiene~
+     ~ quel ~versetto~ iniziale!}
+   }  
+  \int_set:Nn \l_bibbia_numero_VerIniz_int  {\l_bibbia_numero_VerIniz_tl}
+  \tl_set:Nn \l_bibbia_temp_five_tl {#5}
+  \tl_set:Nn \l_bibbia_temp_four_tl {#4}
+    \tl_if_empty:NTF \l_bibbia_temp_four_tl
+     {
+      \tl_if_empty:NTF \l_bibbia_temp_five_tl
+        {
+         \tl_set:Nn \l_bibbia_VerFin_tl {#3}
+        }
+        {
+         \tl_set:Nx \l_bibbia_VerFin_tl 
+          {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_numero_versetti_totali_int}
+        }
+     }
+     {\tl_set:Nn \l_bibbia_VerFin_tl{#4}}
+   \prop_get:NVNTF \l_corrisp_vc_versetti \l_bibbia_VerFin_tl 
+    \l_bibbia_numero_VerFin_tl
+   {}
+   {
+    \msg_error:nn {bibbial3} {ATTENZIONE!~Questo~capitolo~ 
+    non~ contiene ~quel~versetto~finale!}
+   }
+   \int_set:Nn \l_bibbia_numero_VerFin_int {\l_bibbia_numero_VerFin_tl}
+   \tl_set:Nn \l_bibbia_riferimenti_testo_tl 
+     {
+      (#1\,#2,~\l_bibbia_VerIniz_tl\int_compare:nTF 
+      {\l_bibbia_numero_VerIniz_int = \l_bibbia_numero_VerFin_int}
+      {\scan_stop:}
+      {--\l_bibbia_VerFin_tl} )
+     }
+ }
+%    \end{macrocode}
+%
+% È possibile inserire automaticamente un'intestazione del tipo Dal Libro del Profeta\dots o Dal Vangelo secondo\dots. La spaziatura prima delle intestazioni è regolata dal comando \verb!\spaziaturapreintestazioni!. La spaziatura dopo le intestazioni è regolata dal comando \verb!\spaziaturapostintestazioni!. Con i comandi \verb!\fontintestazioni! e \verb!\fontriferimenti! si possono impostare i font dell'intestazione e dei riferimenti biblici. Le intestazioni sono contenute nella property list \verb!\g_bibbia_intestaz_cap_prop!.
+%    \begin{macrocode}		
+\NewDocumentCommand{\spaziaturapreintestazioni}{}{\vspace{\baselineskip}}
+\NewDocumentCommand{\spaziaturapostintestazioni}{}{\medskip}
+\NewDocumentCommand{\fontintestazioni}{}{\scshape}
+\NewDocumentCommand{\fontriferimenti}{}{\small}
+\tl_new:N \l_bibbia_intestazioni_complete_tl
+\tl_set:Nn \l_bibbia_intestazioni_complete_tl 
+{\par\spaziaturapreintestazioni\noindent{\fontintestazioni
+\l_bibbia_intestazione_libro_tl\normalfont\normalsize\  \fontriferimenti
+\l_bibbia_riferimenti_testo_tl}\par\nobreak\spaziaturapostintestazioni}
+\tl_new:N \vers_temp_tl
+\cs_generate_variant:Nn \regex_match:nnTF {nV} 
+\int_new:N \l_ifverses_int
+%    \end{macrocode}
+% Il comando \verb!\branobibbia! viene usato direttamente nel documento principale. Ha una variante asteriscata che inserisce automaticamente l'intestazione. Il comando genera un errore se riconosce che il numero del versetto iniziale è maggiore a quello del versetto finale. Si occupa poi si stampare i versetti e, se richiesto, i numeri dei versetti. Verifica prima se sia attiva l'opzione \texttt{versepoem}. Se non lo è stampa tutte senza particolari complicazioni, con un ciclo \verb!\int_until_do:!.
+% Se invece l'opzione \texttt{versepoem} è attiva bisogna fare un po' di cose. Si verifica se un versetto contiene il token \verb!bpoem!, quindi se abbiamo un versetto che contiene del testo "poetico". Se non lo contiene si stampa tutto normalmente. Se invece lo contiene si verifica se il versetto inizia con \verb!\bpoem!, cioè se tutto il versetto è "poetico" (a oggi, per come sono strutturati i file di testo dei capitoli, non esistono versetti che contengono \verb!bpoem! e non iniziano con \verb!bpoem!. Sarebbe però una cosa da sistemare. Ad esempio in Gn 3,\thinspace 16 sarebbe opportuno che la prima riga <<E alla donna disse:>> non fosse rientrata come il resto del versetto. È una cosa su cui lavorare).
+%
+% Qui è stato fatto un bieco trucco per gestire la stampa dei numeri dei versetti. È stato creato un contatore \verb!\l_ifverses_int! che cambia valore a seconda del caso in cui ci si trova. All'inizio dell'elaborazione è a zero e viene aumentato a ogni \verb!\bpoem!. Se il versetto non inizia con  \verb!\bpoem! viene impostato a 1000. Questo serve perché il numero dei versetti viene stampato all'inizio di ogni riga poetica solo se \verb!\l_ifverses_int! è uguale a 1, cioè solo davanti alla prima riga del versetto.
+%    \begin{macrocode}		
+\NewDocumentCommand{\branobibbia}{sm}
+ {
+  \group_begin:
+  \bibbia_estraidati:w #2--!!
+  \int_compare:nNnTF {\l_bibbia_numero_VerFin_int} < {\l_bibbia_numero_VerIniz_int}
+   {
+    \msg_error:nn{bibbial3} {ATTENZIONE!~Il~ numero~ del ~versetto~ iniziale~ non~ deve~ 
+   essere~ maggiore~ di~ quello~ finale}
+   }
+   {\scan_stop:}
+  \int_set:Nn \l_bibbia_vers_count_int {\l_bibbia_numero_VerIniz_int}
+  \prop_get:Nn \l_corrisp_vc_versetti {\l_bibbia_VerFin_tl} 
+  \IfBooleanTF {#1} 
+   { \l_bibbia_intestazioni_complete_tl} 
+   { \scan_stop: }
+  \if_bool:N \g_versepoem_bool
+  {
+   \int_until_do:nn {\l_bibbia_vers_count_int > \l_bibbia_numero_VerFin_int}
+   {
+    \int_zero:N \l_ifverses_int
+    \prop_get:NVN \l_testo_versetti \l_bibbia_vers_count_int \vers_temp_tl
+    \regex_match:nVTF {\c{bpoem}} \vers_temp_tl % contiene \bpoem?
+    {
+    \regex_match:nVTF {\A \c{bpoem}} \vers_temp_tl % inizia con \bpoem?
+      { % se il versetto inizia con \bpoem
+       \vers_temp_tl
+       \int_incr:N  \l_bibbia_vers_count_int
+      } 
+      {% se il versetto non inizia con \bpoem, ma lo contiene solo
+       \int_set:Nn \l_ifverses_int {\c_one_thousand}
+       \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }
+       \vers_temp_tl
+       \int_incr:N  \l_bibbia_vers_count_int
+      }
+     }
+     {% se il versetto non contiene \bpoem
+       \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
+       \vers_temp_tl
+       \int_incr:N  \l_bibbia_vers_count_int
+     }
+    }%fine until
+  }
+  \else:
+  {
+  \int_until_do:nn {\l_bibbia_vers_count_int > \l_bibbia_numero_VerFin_int}
+   {
+    \prop_get:NVN \l_testo_versetti \l_bibbia_vers_count_int \vers_temp_tl
+    \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
+     \vers_temp_tl
+     \int_incr:N  \l_bibbia_vers_count_int
+    }
+   }
+   \fi:
+   \group_end:
+ }
+%    \end{macrocode}		
+% Per la gestione dei brani poetici vengono definite alcuni comandi. \verb!\poemindent! regola il rientro dei brani. \verb!\poemhang! regola la dimensione del rientro nel caso in cui una riga di testo vada a capo. \verb!\epoem! viene definito come quark e funge da delimitatore. La distanza fra i versetti poetici è regolata dal comando \verb!\poemversesep!. Quando vengono attivate le opzioni \texttt{slashpoem} e \texttt{textpoem} i comandi \verb!\poemsep!, \verb!\bpoem! e \verb!\epoem! assumono diversi significati.
+%    \begin{macrocode}		
+\newlength\poemindent 
+\setlength{\poemindent}{4em}
+\newlength\poemhang
+\setlength{\poemhang}{2em}
+\if_bool:N \g_versepoem_bool
+ {%true code= VERSI
+  \__scan_new:N \epoem
+  \cs_new_protected:Npn \poemsep {\poemversesep}
+  \cs_new:Npn \bpoem #1\epoem
+  {\int_compare:nNnTF {\l_ifverses_int} = {\c_one_thousand}{\par}{\scan_stop:}
+   \int_incr:N \l_ifverses_int
+   {\par\noindent\kern\poemindent
+  \minipage[t]{\dimexpr\textwidth-\poemindent}\ignorespaces\hangindent=\poemhang
+    \int_compare:nNnTF {\l_ifverses_int} = {\c_one}
+      {\stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }}
+      {\scan_stop:}
+      #1\biblepar\xdef\theprevdepth{\the\prevdepth}\endminipage
+   } \par\prevdepth=\theprevdepth
+  }
+ }\else:
+ {%false = TESTO
+  \if_bool:N \g_slashpoem_bool
+   {% vero= SLASH
+    \cs_new_protected:Npn \poemsep {\textversesep}
+    \cs_new_protected:Npn \bpoem {}
+    \cs_new_protected:Npn \epoem {\peek_meaning:NTF \bpoem {\thinspace/\hspace{0.1666em}}{}}
+   }
+   \else:
+   {%falso= TESTO SEMPLICE
+    \cs_new_protected:Npn \poemsep {\slashversesep}
+    \cs_new_protected:Npn \bpoem {}
+    \cs_new_protected:Npn \epoem {\ }
+   }
+   \fi:
+ }
+\fi:
+
+%    \end{macrocode}		
+%Creiamo una prop list in cui inserire le sigle dei capitoli e il numero dei capitoli del libro, serve per verificare se ci sono errori nei riferimenti biblici dati a \verb!branobibbia{}!.
+%    \begin{macrocode}		
+\prop_new:N \g_bibbia_libri_capitoli
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gn}{50}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Es}{40}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Lv}{27}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Nm}{36}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Dt}{34}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gs}{24}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gdc}{21}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Rt}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Sam}{31}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Sam}{24}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Re}{22}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Re}{25}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Cr}{29}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Cr}{36}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Esd}{10}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ne}{13}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Tb}{14}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gdt}{16}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Est}{10}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Mac}{16}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Mac}{15}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gb}{42}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Sal}{150}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Pro}{31}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Qo}{12}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ct}{8}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Sap}{19}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Sir}{51}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Is}{66}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ger}{52}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Lam}{5}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Bar}{6}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ez}{48}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Dn}{14}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Os}{14}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gl}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Am}{9}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Abd}{1}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gio}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Mic}{7}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Na}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ab}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Sof}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ag}{2}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Zc}{14}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ml}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Mt}{28}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Mc}{16}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Lc}{24}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gv}{21}
+\prop_put:Nnn \g_bibbia_libri_capitoli {At}{28}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Rm}{16}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Cor}{16}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Cor}{13}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gal}{6}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ef}{6}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Fil}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Col}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Ts}{5}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Ts}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Tm}{6}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Tm}{4}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Tt}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Fm}{1}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Eb}{13}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gc}{5}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Pt}{5}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Pt}{3}
+\prop_put:Nnn \g_bibbia_libri_capitoli {1Gv}{5}
+\prop_put:Nnn \g_bibbia_libri_capitoli {2Gv}{1}
+\prop_put:Nnn \g_bibbia_libri_capitoli {3Gv}{1}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Gd}{1}
+\prop_put:Nnn \g_bibbia_libri_capitoli {Ap}{22}
+%    \end{macrocode}		
+%Creiamo una prop list in cui inserire le intestazioni che devono comparire prima dei brani biblici.
+%    \begin{macrocode}		
+\prop_new:N \g_bibbia_intestaz_cap_prop
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gn} {Dal~Libro~della~Genesi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Es} {Dal~Libro~dell'Esodo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Lv} {Dal~Libro~del~Levitico}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Nm} {Dal~Libro~dei~Numeri}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Dt} {Dal~Libro~del~Deuteronomio}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gs} {Dal~Libro~di~Giosuè}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gdc} {Dal~Libro~dei~Giudici}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Rt} {Dal~Libro~di~Rut}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Sam} {Dal~Primo~Libro~di~Samuele}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Sam} {Dal~Secondo~Libro~di~Samuele}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Re} {Dal~Primo~Libro~dei~Re}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Re} {Dal~Secondo~Libro~dei~Re}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Cr} {Dal~Primo~Libro~delle~Cronache}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Cr} {Dal~Secondo~Libro~delle~Cronache}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Esd} {Dal~Libro~di~Esdra}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ne} {Dal~Libro~del~Profeta~Neemia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Tb} {Dal~Libro~Tobia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gdt} {Dal~Libro~di~Giuditta}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Est} {Dal~Libro~di~Ester}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Mac} {Dal~Primo~Libro~dei~Maccabei}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Mac} {Dal~Secondo~Libro~dei~Maccabei}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gb} {Dal~Libro~di~Giobbe}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Sal} {Dal~Libro~dei~Salmi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Pro} {Dal~Libro~dei~Proverbi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Qo} {Dal~Libro~del~Qoèlet}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ct} {Dal~Cantico~dei~Cantici}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Sap} {Dal~Libro~della~Sapienza}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Sir} {Dal~Libro~del~Siracide}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Is} {Dal~Libro~del~Profeta~Isaia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ger} {Dal~Libro~del~Profeta~Geremia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Lam} {Dal~Libro~delle~Lamentazioni}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Bar} {Dal~Libro~del~Profeta~Baruc}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ez} {Dal~Libro~del~Profeta~Ezechiele}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Dn} {Dal~Libro~del~Profeta~Daniele}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Os} {Dal~Libro~del~Profeta~Osea}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gl} {Dal~Libro~del~Profeta~Gioele}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Am} {Dal~Libro~del~Profeta~Amos}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Abd} {Dal~Libro~del~Profeta~Abdia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gio} {Dal~Libro~di~Giona}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Mic} {Dal~Libro~di~Michea}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Na} {Dal~Libro~del~Profeta~Naum}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ab} {Dal~Libro~del~Profeta~Abacuc}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Sof} {Dal~Libro~del~Profeta~Sofonia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ag} {Dal~Libro~del~Profeta~Aggeo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Zc} {Dal~Libro~del~Profeta~Zaccaria}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ml} {Dal~Libro~del~Profeta~Malachia}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Mt} {Dal~Vangelo~secondo~Matteo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Mc} {Dal~Vangelo~secondo~Marco}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Lc} {Dal~Vangelo~secondo~Luca}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gv} {Dal~Vangelo~secondo~Giovanni}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {At} {Dagli~Atti~degli~Apostoli}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Rm} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~ai~Romani}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Cor} 
+  {Dalla~Prima~lettera~di~San~Paolo~Apostolo~ai~Corinzi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Cor} 
+  {Dalla~Seconda~lettera~di~San~Paolo~Apostolo~ai~Corinzi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gal} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~ai~Galati}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ef} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~agli~Efesini}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Fil} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~ai~Filippesi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Col} 
+  {Dalla~Prima~Lettera~di~San~Paolo~Apostolo~ai~Colossesi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Ts} 
+  {Dalla~Prima~Lettera~di~San~Paolo~Apostolo~ai~Tessalonicesi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Ts} 
+  {Dalla~Seconda~Lettera~di~San~Paolo~Apostolo~ai~Tessalonicesi}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Tm} 
+  {Dalla~Prima~Lettera~di~San~Paolo~Apostolo~a~Timoteo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Tm} 
+  {Dalla~Seconda~Lettera~di~San~Paolo~Apostolo~a~Timoteo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Tt} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~a~Tito}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Fm} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~a~Filemone}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Eb} 
+  {Dalla~Lettera~di~San~Paolo~Apostolo~agli~Ebrei}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gc} 
+  {Dalla~Lettera~di~San~Giacomo~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Pt} 
+  {Dalla~Prima~lettera~di~San~Pietro~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Pt} 
+  {Dalla~Seconda~lettera~di~San~Pietro~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {1Gv} 
+  {Dalla~Prima~lettera~di~San~Giovanni~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {2Gv} 
+  {Dalla~Seconda~lettera~di~San~Giovanni~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {3Gv} 
+  {Dalla~Terza~lettera~di~San~Giovanni~Apostolo}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Gd} {Dalla ~Lettera~di~Giuda}
+\prop_put:Nnn \g_bibbia_intestaz_cap_prop {Ap} 
+  {Dal~Libro~dell'Apocalisse~di~San~Giovanni~Apostolo}
+%    \end{macrocode}
+% \iffalse
+%</package>
+% \fi
+% \end{implementation}
+%
+% \PrintIndex
