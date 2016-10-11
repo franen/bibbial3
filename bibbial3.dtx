@@ -40,9 +40,10 @@
   $\langle${\normalfont\itshape#1\kern0.12em }$\rangle$}
 %</driver>
 %<*driver|package>
-\GetIdInfo$Id: bibbial3.dtx 0.4 2013-03-26 12:00:00Z Francesco $
+\GetIdInfo$Id: bibbial3.dtx 0.5 2016-10-11 12:00:00Z Francesco $
           {Inserire brani biblici in un documento}
 % 0.4: metto attibuti g_ o l_ alle macro, usato \__scan_new:N al posto di \scan_new:N
+% 0.5: sostituito \prop_get:Nn con \prop_item:Nn
 %</driver|package>
 %<*driver>
 \begin{document}
@@ -284,7 +285,7 @@
 \int_new:N \l_bibbia_numero_VerIniz_int
 \int_new:N \l_bibbia_numero_VerFin_int
 \int_new:N \l_bibbia_numero_versetti_totali_int
-\cs_generate_variant:Nn \prop_get:Nn {NV}
+\cs_generate_variant:Nn \prop_item:Nn {NV}
 %    \end{macrocode}
 % definisco i comandi che regolano le spaziature dei capoversi con le diverse opzioni.
 %    \begin{macrocode}		
@@ -372,7 +373,7 @@
         }
         {
          \tl_set:Nx \l_bibbia_VerFin_tl 
-          {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_numero_versetti_totali_int}
+          {\prop_item:NV \l_corrisp_cv_versetti \l_bibbia_numero_versetti_totali_int}
         }
      }
      {\tl_set:Nn \l_bibbia_VerFin_tl{#4}}
@@ -425,7 +426,7 @@
    }
    {\scan_stop:}
   \int_set:Nn \l_bibbia_vers_count_int {\l_bibbia_numero_VerIniz_int}
-  \prop_get:Nn \l_corrisp_vc_versetti {\l_bibbia_VerFin_tl} 
+  \prop_item:Nn \l_corrisp_vc_versetti {\l_bibbia_VerFin_tl} 
   \IfBooleanTF {#1} 
    { \l_bibbia_intestazioni_complete_tl} 
    { \scan_stop: }
@@ -444,13 +445,13 @@
       } 
       {% se il versetto non inizia con \bpoem, ma lo contiene solo
        \int_set:Nn \l_ifverses_int {\c_one_thousand}
-       \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }
+       \stampanumero:n {\prop_item:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }
        \vers_temp_tl
        \int_incr:N  \l_bibbia_vers_count_int
       }
      }
      {% se il versetto non contiene \bpoem
-       \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
+       \stampanumero:n {\prop_item:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
        \vers_temp_tl
        \int_incr:N  \l_bibbia_vers_count_int
      }
@@ -461,7 +462,7 @@
   \int_until_do:nn {\l_bibbia_vers_count_int > \l_bibbia_numero_VerFin_int}
    {
     \prop_get:NVN \l_testo_versetti \l_bibbia_vers_count_int \vers_temp_tl
-    \stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
+    \stampanumero:n {\prop_item:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int } 
      \vers_temp_tl
      \int_incr:N  \l_bibbia_vers_count_int
     }
@@ -486,7 +487,7 @@
    {\par\noindent\kern\poemindent
   \minipage[t]{\dimexpr\textwidth-\poemindent}\ignorespaces\hangindent=\poemhang
     \int_compare:nNnTF {\l_ifverses_int} = {\c_one}
-      {\stampanumero:n {\prop_get:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }}
+      {\stampanumero:n {\prop_item:NV \l_corrisp_cv_versetti \l_bibbia_vers_count_int }}
       {\scan_stop:}
       #1\biblepar\xdef\theprevdepth{\the\prevdepth}\endminipage
    } \par\prevdepth=\theprevdepth
